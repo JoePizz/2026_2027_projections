@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Junior Hockey 2026-27 Predictions</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .filters-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .filters-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .filters-title::before {
+            content: '🔍';
+            margin-right: 10px;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-group select:hover,
+        .filter-group input:hover {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .reset-button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            align-self: flex-end;
+            margin-top: 10px;
+        }
+
+        .reset-button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        th:hover {
+            background: rgba(0, 0, 0, 0.1);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        th.sortable {
+            cursor: pointer;
+        }
+
+        th.sortable::after {
+            content: ' ⇅';
+            opacity: 0.5;
+            margin-left: 5px;
+        }
+
+        th.sorted-asc::after {
+            content: ' ↑';
+            opacity: 1;
+            color: #ffd700;
+        }
+
+        th.sorted-desc::after {
+            content: ' ↓';
+            opacity: 1;
+            color: #ffd700;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e9ecef;
+            transition: all 0.15s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+            box-shadow: inset 0 0 10px rgba(102, 126, 234, 0.05);
+        }
+
+        td {
+            padding: 12px 15px;
+            color: #333;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .league-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .league-ohl {
+            background: #ffe5e5;
+            color: #c41e3a;
+        }
+
+        .league-ojhl {
+            background: #e5f1ff;
+            color: #004da6;
+        }
+
+        .league-gojhl {
+            background: #e5ffe5;
+            color: #2d5016;
+        }
+
+        .league-nojhl {
+            background: #fff5e5;
+            color: #cc6600;
+        }
+
+        .league-gthl {
+            background: #f0e5ff;
+            color: #663399;
+        }
+
+        .league-omha {
+            background: #ffe5f0;
+            color: #8b0043;
+        }
+
+        .league-heo {
+            background: #e5ffff;
+            color: #003d3d;
+        }
+
+        .league-alliance {
+            background: #fff0e5;
+            color: #996600;
+        }
+
+        .position-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .prediction-cell {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .prediction-high {
+            color: #28a745;
+        }
+
+        .prediction-mid {
+            color: #ffc107;
+        }
+
+        .prediction-low {
+            color: #dc3545;
+        }
+
+        .stats-info {
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+        }
+
+        .results-info {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .results-info strong {
+            color: #333;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: #666;
+        }
+
+        .tab-button.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-button:hover:not(.active) {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .column-selector {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .column-selector h3 {
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .column-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .column-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .column-checkbox input {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        .column-checkbox label {
+            cursor: pointer;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.8em;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+
+            .league-badge, .position-badge {
+                font-size: 0.75em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [data, setData] = useState([]);
+            const [filteredData, setFilteredData] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+
+            // Filters
+            const [selectedLeague, setSelectedLeague] = useState('');
+            const [selectedPosition, setSelectedPosition] = useState('');
+            const [selectedAgeGroup, setSelectedAgeGroup] = useState('');
+            const [playerSearch, setPlayerSearch] = useState('');
+            const [minPPG, setMinPPG] = useState('');
+            const [maxPPG, setMaxPPG] = useState('');
+
+            // Sorting
+            const [sortColumn, setSortColumn] = useState('PTS_OHL_2026_27');
+            const [sortOrder, setSortOrder] = useState('desc');
+
+            // Tab for predictions
+            const [activeTab, setActiveTab] = useState('OHL');
+
+            // Column visibility
+            const [visibleColumns, setVisibleColumns] = useState({
+                Player: true,
+                Team_2025_26: true,
+                League_2025_26: true,
+                Position_Class: true,
+                Age_Group_2025_26: true,
+                GP_2025_26: true,
+                TP_2025_26: true,
+                PPG_2025_26: true,
+                ['PPG_' + 'OHL' + '_2026_27']: true,
+                ['PTS_' + 'OHL' + '_2026_27']: true,
+            });
+
+            // Load data
+            useEffect(() => {
+                fetch('predictions_data.json')
+                    .then(res => res.json())
+                    .then(jsonData => {
+                        setData(jsonData);
+                        setLoading(false);
+                    })
+                    .catch(err => {
+                        setError('Failed to load data: ' + err.message);
+                        setLoading(false);
+                    });
+            }, []);
+
+            // Filter and sort data
+            useEffect(() => {
+                if (data.length === 0) return;
+
+                let filtered = data.filter(row => {
+                    if (selectedLeague && row.League_2025_26 !== selectedLeague) return false;
+                    if (selectedPosition && row.Position_Class !== selectedPosition) return false;
+                    if (selectedAgeGroup && row.Age_Group_2025_26 !== selectedAgeGroup) return false;
+                    if (playerSearch && !row.Player.toLowerCase().includes(playerSearch.toLowerCase())) return false;
+                    
+                    const ppg = row.PPG_2025_26;
+                    if (minPPG && ppg < parseFloat(minPPG)) return false;
+                    if (maxPPG && ppg > parseFloat(maxPPG)) return false;
+                    
+                    return true;
+                });
+
+                // Sort
+                filtered.sort((a, b) => {
+                    let aVal = a[sortColumn];
+                    let bVal = b[sortColumn];
+
+                    if (aVal === null || aVal === undefined) aVal = 0;
+                    if (bVal === null || bVal === undefined) bVal = 0;
+
+                    if (typeof aVal === 'string') {
+                        return sortOrder === 'asc' 
+                            ? aVal.localeCompare(bVal)
+                            : bVal.localeCompare(aVal);
+                    }
+
+                    return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+                });
+
+                setFilteredData(filtered);
+            }, [data, selectedLeague, selectedPosition, selectedAgeGroup, playerSearch, minPPG, maxPPG, sortColumn, sortOrder]);
+
+            const handleSort = (column) => {
+                if (sortColumn === column) {
+                    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                } else {
+                    setSortColumn(column);
+                    setSortOrder('desc');
+                }
+            };
+
+            const handleReset = () => {
+                setSelectedLeague('');
+                setSelectedPosition('');
+                setSelectedAgeGroup('');
+                setPlayerSearch('');
+                setMinPPG('');
+                setMaxPPG('');
+            };
+
+            const handleTabChange = (tab) => {
+                setActiveTab(tab);
+                setSortColumn(`PTS_${tab}_2026_27`);
+                setSortOrder('desc');
+            };
+
+            const handleColumnToggle = (col) => {
+                setVisibleColumns(prev => ({
+                    ...prev,
+                    [col]: !prev[col]
+                }));
+            };
+
+            const getLeagueBadgeClass = (league) => {
+                if (league.includes('OHL')) return 'league-ohl';
+                if (league.includes('OJHL')) return 'league-ojhl';
+                if (league.includes('GOJHL')) return 'league-gojhl';
+                if (league.includes('NOJHL')) return 'league-nojhl';
+                if (league.includes('GTHL')) return 'league-gthl';
+                if (league.includes('OMHA')) return 'league-omha';
+                if (league.includes('HEO')) return 'league-heo';
+                if (league.includes('ALLIANCE')) return 'league-alliance';
+                return '';
+            };
+
+            const getPredictionClass = (ppg) => {
+                if (ppg >= 0.6) return 'prediction-high';
+                if (ppg >= 0.3) return 'prediction-mid';
+                return 'prediction-low';
+            };
+
+            if (loading) return <div className="container" style={{padding: '40px', textAlign: 'center'}}>Loading...</div>;
+            if (error) return <div className="container" style={{padding: '40px', textAlign: 'center', color: 'red'}}>{error}</div>;
+
+            const uniqueLeagues = ['', ...new Set(data.map(r => r.League_2025_26))].sort();
+            const uniquePositions = ['', ...new Set(data.map(r => r.Position_Class))].sort();
+            const uniqueAgeGroups = ['', ...new Set(data.map(r => r.Age_Group_2025_26))].sort();
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>🏒 Junior Hockey 2026-27 Predictions</h1>
+                        <p>Regression-based points predictions for all major junior leagues</p>
+                    </div>
+
+                    <div className="content">
+                        <div className="filters-section">
+                            <div className="filters-title">Filters</div>
+                            
+                            <div className="filter-row">
+                                <div className="filter-group">
+                                    <label>Player Name</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Search player..."
+                                        value={playerSearch}
+                                        onChange={e => setPlayerSearch(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="filter-group">
+                                    <label>League</label>
+                                    <select value={selectedLeague} onChange={e => setSelectedLeague(e.target.value)}>
+                                        {uniqueLeagues.map(league => (
+                                            <option key={league} value={league}>
+                                                {league || 'All Leagues'}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="filter-group">
+                                    <label>Position</label>
+                                    <select value={selectedPosition} onChange={e => setSelectedPosition(e.target.value)}>
+                                        {uniquePositions.map(pos => (
+                                            <option key={pos} value={pos}>
+                                                {pos === 'C' ? 'Center' : pos === 'W' ? 'Winger' : pos === 'D' ? 'Defense' : pos || 'All Positions'}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="filter-group">
+                                    <label>Age Group</label>
+                                    <select value={selectedAgeGroup} onChange={e => setSelectedAgeGroup(e.target.value)}>
+                                        {uniqueAgeGroups.map(age => (
+                                            <option key={age} value={age}>
+                                                {age ? age.toUpperCase() : 'All Ages'}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="filter-row">
+                                <div className="filter-group">
+                                    <label>Min PPG (2025-26)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="0.0"
+                                        min="0"
+                                        step="0.1"
+                                        value={minPPG}
+                                        onChange={e => setMinPPG(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="filter-group">
+                                    <label>Max PPG (2025-26)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="3.0"
+                                        min="0"
+                                        step="0.1"
+                                        value={maxPPG}
+                                        onChange={e => setMaxPPG(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <button className="reset-button" onClick={handleReset}>
+                                Reset Filters
+                            </button>
+                        </div>
+
+                        <div className="results-info">
+                            Showing <strong>{filteredData.length}</strong> of <strong>{data.length}</strong> players
+                        </div>
+
+                        <div className="tab-buttons">
+                            {['OHL', 'OJHL', 'GOJHL', 'NOJHL'].map(league => (
+                                <button
+                                    key={league}
+                                    className={`tab-button ${activeTab === league ? 'active' : ''}`}
+                                    onClick={() => handleTabChange(league)}
+                                >
+                                    {league} Predictions
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        {visibleColumns.Player && <th className="sortable" onClick={() => handleSort('Player')} style={{minWidth: '150px'}}>Player</th>}
+                                        {visibleColumns.Team_2025_26 && <th className="sortable" onClick={() => handleSort('Team_2025_26')} style={{minWidth: '150px'}}>Team</th>}
+                                        {visibleColumns.League_2025_26 && <th className="sortable" onClick={() => handleSort('League_2025_26')}>League</th>}
+                                        {visibleColumns.Position_Class && <th className="sortable" onClick={() => handleSort('Position_Class')}>Position</th>}
+                                        {visibleColumns.Age_Group_2025_26 && <th className="sortable" onClick={() => handleSort('Age_Group_2025_26')}>Age</th>}
+                                        {visibleColumns.GP_2025_26 && <th className="sortable" onClick={() => handleSort('GP_2025_26')}>GP</th>}
+                                        {visibleColumns.TP_2025_26 && <th className="sortable" onClick={() => handleSort('TP_2025_26')}>PTS</th>}
+                                        {visibleColumns.PPG_2025_26 && <th className="sortable" onClick={() => handleSort('PPG_2025_26')}>PPG</th>}
+                                        <th className={`sortable ${sortColumn === `PPG_${activeTab}_2026_27` ? `sorted-${sortOrder}` : ''}`} onClick={() => handleSort(`PPG_${activeTab}_2026_27`)}>
+                                            {activeTab} PPG 26-27
+                                        </th>
+                                        <th className={`sortable ${sortColumn === `PTS_${activeTab}_2026_27` ? `sorted-${sortOrder}` : ''}`} onClick={() => handleSort(`PTS_${activeTab}_2026_27`)}>
+                                            {activeTab} PTS 26-27
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredData.map((row, idx) => (
+                                        <tr key={idx}>
+                                            {visibleColumns.Player && <td className="player-name">{row.Player}</td>}
+                                            {visibleColumns.Team_2025_26 && <td>{row.Team_2025_26}</td>}
+                                            {visibleColumns.League_2025_26 && <td><span className={`league-badge ${getLeagueBadgeClass(row.League_2025_26)}`}>{row.League_2025_26}</span></td>}
+                                            {visibleColumns.Position_Class && <td><span className="position-badge">{row.Position_Class}</span></td>}
+                                            {visibleColumns.Age_Group_2025_26 && <td>{row.Age_Group_2025_26.toUpperCase()}</td>}
+                                            {visibleColumns.GP_2025_26 && <td className="stats-info">{row.GP_2025_26}</td>}
+                                            {visibleColumns.TP_2025_26 && <td className="stats-info">{row.TP_2025_26}</td>}
+                                            {visibleColumns.PPG_2025_26 && <td className="stats-info">{row.PPG_2025_26.toFixed(3)}</td>}
+                                            <td className={`prediction-cell ${getPredictionClass(row[`PPG_${activeTab}_2026_27`])}`}>
+                                                {row[`PPG_${activeTab}_2026_27`].toFixed(3)}
+                                            </td>
+                                            <td className={`prediction-cell ${getPredictionClass(row[`PPG_${activeTab}_2026_27`])}`}>
+                                                <strong>{row[`PTS_${activeTab}_2026_27`].toFixed(1)}</strong>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
